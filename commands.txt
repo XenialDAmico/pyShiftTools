@@ -1,0 +1,11 @@
+# Mandarin Express - Prod(All Sites)
+# python3 EmptyShifts.py companyid=5bf41abf8473de001e0b7bb7   keyid=ada803f8-4ef0-4e61-afa2-9dc18fa529c1 secret=0b996640-9d45-455e-a8ae-e8b76377314b environment=production siteid=5c1a6afdb3c079001334933f deleteEmptyShifts=0
+# python3 EmptyShifts.py companyid=5bf41abf8473de001e0b7bb7   keyid=ada803f8-4ef0-4e61-afa2-9dc18fa529c1 secret=0b996640-9d45-455e-a8ae-e8b76377314b environment=production deleteEmptyShifts=0
+
+# Dennys - Prod (2050)
+# python3 EmptyShifts.py siteid=60eeddff1ced140007759ac1 companyid=5ddab0e3d93109001df6a76c keyid=ac5515b8-269d-481e-8af3-c5b57f9cca3d secret=f1e6f1eb-0c3b-4d60-b472-11be6649ef3d environment=production deleteEmptyShifts=1
+# python3 EmptyShifts.py siteid=61e9d272deaf050009fc9a49 companyid=5ddab0e3d93109001df6a76c keyid=ac5515b8-269d-481e-8af3-c5b57f9cca3d secret=f1e6f1eb-0c3b-4d60-b472-11be6649ef3d environment=production 
+# 
+
+ Dennys - Prod (All Sites)
+# python3 EmptyShifts.py companyid=5ddab0e3d93109001df6a76c keyid=ac5515b8-269d-481e-8af3-c5b57f9cca3d secret=f1e6f1eb-0c3b-4d60-b472-11be6649ef3d environment=production
