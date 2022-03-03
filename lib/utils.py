@@ -1,4 +1,5 @@
-import sys,logging, time
+import sys,logging, time, pytz
+from datetime import datetime
 
 # Print iterations progress
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
@@ -34,3 +35,36 @@ def worker(arg):
 def Merge(order, items): 
     orderitems = {**order, **items} 
     return orderitems 
+
+
+    
+
+
+def log(level,msg):
+    today = datetime.today()
+    utc=pytz.UTC
+    today = today.replace(tzinfo=utc)
+    
+    todaystr = today.strftime('%Y-%m-%d')
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+
+    if not logger.hasHandlers():
+        stdout_handler = logging.StreamHandler(sys.stdout)
+        stdout_handler.setLevel(logging.DEBUG)
+        stdout_handler.setFormatter(formatter)
+        file_handler = logging.FileHandler(sys.argv[0] + "_" + todaystr + '.log')
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+        logger.addHandler(stdout_handler)
+    
+
+    if level.upper() == "ERROR":
+        logger.setLevel(logging.ERROR)
+        logger.error(msg)
+    else:
+        logger.setLevel(logging.INFO)
+        logger.info(msg)
+

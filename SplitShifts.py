@@ -25,7 +25,7 @@
 import  sys,  json, requests, pytz
 import logging, time
 from datetime import datetime, timedelta
-from lib.utils import  printProgressBar
+from lib.utils import  printProgressBar,log
 from lib.xprt import getSitesForCompany, getIntegratorToken
 
 from lib.ssr import getRegistry
@@ -39,112 +39,61 @@ utc=pytz.UTC
 
 debug = 0
 
+def main():
+    scriptStart = datetime.now()
 
-scriptStart = datetime.now()
 
+    # Initialize Variables
+    companyid = "" 
+    siteid = "" 
+    user = ""
+    password = ""
+    environment = ""
+    date=""
+    secret=""
+    keyid=""
 
-# Initialize Variables
-companyid = "" 
-siteid = "" 
-user = ""
-password = ""
-environment = ""
-date=""
-secret=""
-keyid=""
+    # -------------------------------------------
+    # get script arguments
+    # -------------------------------------------
+    position = 1
+    while (position < len(sys.argv)):  
+        if "=" in sys.argv[position]:
+            KeyValue = sys.argv[position].split("=")
+            # Check for 'Environment' Argument
+            if KeyValue[0].lower() == 'environment':
+                # Get Env from commandline
+                environment = KeyValue[1]
+                log("INFO","Environment Arg Accepted: " + KeyValue[1])
+            # Check for 'CompanyID' Argument
+            elif KeyValue[0].lower() == 'companyid':
+                # Get CompanyId from commandline
+                companyid = KeyValue[1]
+                log("INFO","CompanyId Arg Accepted: " + KeyValue[1])
+            # Check for 'SiteID' Argument
+            elif KeyValue[0].lower() == 'siteid':
+                # Get SiteID from commandline
+                siteid = KeyValue[1]
+                log("INFO","SiteId(s) Arg Accepted: " + KeyValue[1])
+            # Check for 'KeyID' Argument
+            elif KeyValue[0].lower() == 'keyid':
+                # Get User from commandline
+                log("INFO","KeyID Arg Accepted: " + KeyValue[1])
+                keyid = KeyValue[1]
+            # Check for 'Secret' Argument
+            elif KeyValue[0].lower() == 'secret':
+                # Get password from commandline
+                secret = KeyValue[1]
+                log("INFO","Secret Arg Accepted: " + KeyValue[1])
+        else:
+            [KeyValue[0]] = KeyValue[1]
+        position += 1
+        
 
-# -------------------------------------------
-# get script arguments
-# -------------------------------------------
-position = 1
-while (position < len(sys.argv)):  
-    if "=" in sys.argv[position]:
-        KeyValue = sys.argv[position].split("=")
-        # Check for 'Environment' Argument
-        if KeyValue[0].lower() == 'environment':
-            # Get Env from commandline
-            environment = KeyValue[1]
-            print(("Environment Arg Accepted: " + KeyValue[1]))
-        # Check for 'CompanyID' Argument
-        elif KeyValue[0].lower() == 'companyid':
-            # Get CompanyId from commandline
-            companyid = KeyValue[1]
-            print(("CompanyId Arg Accepted: " + KeyValue[1]))
-        # Check for 'Password' Argument
-        elif KeyValue[0].lower() == 'password':
-            # Get password from commandline
-            password = KeyValue[1]
-            print(("Password Arg Accepted: " + KeyValue[1]))
-        # Check for 'User' Argument
-        elif KeyValue[0].lower() == 'user':
-            # Get user from commandline
-            user = KeyValue[1]
-            print(("User Arg Accepted: " + KeyValue[1]))
-        # Check for 'Date' Argument
-        elif KeyValue[0].lower() == 'date':
-            # Get date from commandline
-            date = KeyValue[1]
-            print(("Date Arg Accepted: " + KeyValue[1]))
-        # Check for 'DeleteShifts' Argument
-        elif KeyValue[0].lower() == 'deleteemptyshifts':
-            # Get SiteID from commandline
-            deleteEmptyShifts = KeyValue[1]
-            print(("deleteEmptyShifts Arg Accepted: " + KeyValue[1]))
-        # Check for 'SiteID' Argument
-        elif KeyValue[0].lower() == 'siteid':
-            # Get SiteID from commandline
-            siteid = KeyValue[1]
-            print(("SiteId(s) Arg Accepted: " + KeyValue[1]))
-        # Check for 'KeyID' Argument
-        elif KeyValue[0].lower() == 'keyid':
-            # Get User from commandline
-            print(("KeyID Arg Accepted: " + KeyValue[1]))
-            keyid = KeyValue[1]
-        # Check for 'Secret' Argument
-        elif KeyValue[0].lower() == 'secret':
-            # Get password from commandline
-            secret = KeyValue[1]
-            print(("Secret Arg Accepted: " + KeyValue[1]))
-    else:
-        [KeyValue[0]] = KeyValue[1]
-    position += 1
-    
-# -------------------------------------------
-# Some Logging Functions
-# --------------------------------------------
-def logError(msg):
-    logName = sys.argv[0]
-    logger = logging.getLogger(logName)
-    hdlr = logging.FileHandler(logName + '.log', mode='w')
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-    hdlr.setFormatter(formatter)
-    logger.addHandler(hdlr)
-    logger.setLevel(logging.ERROR)
-    logger.error(msg)
-
-def logWarning(msg):
-    logName = sys.argv[0]
-    logger = logging.getLogger(logName)
-    hdlr = logging.FileHandler(logName + '.log', mode='w')
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-    hdlr.setFormatter(formatter)
-    logger.addHandler(hdlr)
-    logger.setLevel(logging.WARN)
-    logger.warning(msg)     
-
-def logInfo(msg):
-    logName = sys.argv[0]
-    logger = logging.getLogger(logName)
-    hdlr = logging.FileHandler(logName + '.log', mode='w')
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-    hdlr.setFormatter(formatter)
-    logger.addHandler(hdlr)
-    logger.setLevel(logging.INFO)
-    logger.info(msg)  
 # -------------------------------------------
 # Setup Environment
 # -------------------------------------------
-def main():
+
     if environment.lower() == "production":
         # Set Defaults
         xprtconn = "https://xprtbackend.heartlandcommerce.com" 
@@ -186,9 +135,9 @@ def main():
 
     if environment.lower() == "uat":
         xprtconn = "https://uat-xprtbackend.xenial.com"
-        boconn =  "https://uat-backoffice-api.xenial.com"
+        boconn =  "https://uat-green-backoffice-api-us-east-1.xenial.com"
         rptconn = "https://uat-reportsbackend.xenial.com"
-        dmconn = "https://uat-dmbackend.heartlandcommerce.com"
+        dmconn = "https://uat-green-dmbackend-us-east-1.xenial.com"
         
 
         # Update defaults from SSR
@@ -199,15 +148,16 @@ def main():
                 rptconn = url["url"]
             if url["key"].lower == "portal":
                 xprtconn = url["url"]
-            if url["key"].lower == "boh_core":
-                boconn = url["url"]
-            if url["key"].lower == "dm":
-                dmconn = url["url"]
+            #if url["key"].lower == "boh_core":
+            #    boconn = url["url"]
+            #if url["key"].lower == "dm":
+            #    dmconn = url["url"]
 
 
     # Check for a Company - we're not doing much if it's not there.
     if companyid.lower() == "" :
         print("FATAL ERROR: Company or Site missing. Pass Argument CompanyID=<value>, and/or SiteID=<value>")
+        log("ERROR","FATAL ERROR: Company or Site missing. Pass Argument CompanyID=<value>, and/or SiteID=<value>")
         exit()
 
     # -------------------------------------------
@@ -237,30 +187,30 @@ def main():
     #Progress is a nice touch, perhaps...
     i = 0
     printProgressBar(i, len(sitesJSON["items"]), prefix = 'Progress:', suffix = 'Complete', length = 50)
-
-
     for  site in sitesJSON["items"]:
+            siteStart = datetime.now()
+            log("INFO", "Starting loop for Site ID: " + str(site["id"]))
+
             #Set Default Value, but override with settings from DM.
             punch_search_end_date_string = todaystr + "T06:59:00"
             punch_search_start_date_string  = lastweekstr + "T00:00:00"
 
             payroll_cutover_string = getPayrollCutoverTime(dmconn,token,companyid,site["id"])
+            log("INFO", "Payroll Cutover Time String from DM reflects value of '" + payroll_cutover_string + "'.")
             
 
             payroll_cutover_time = datetime.strptime(payroll_cutover_string[0:5], '%H:%M')
-        
-            punch_search_end_dt = payroll_cutover_time - timedelta(seconds=1)
+            log("INFO", "Interpreted this string as Payroll Cutover Time of '" + str(payroll_cutover_time) + "'.")
 
+            punch_search_end_dt = payroll_cutover_time - timedelta(seconds=1)
             punch_search_end_date_string = todaystr + "T" + datetime.strftime(punch_search_end_dt,'%H:%M:%S') 
-            if debug:
-                print("Payroll Cutover Time String from DM is " + str(payroll_cutover_string))
-                print("Punch Search End Date String: " + str(punch_search_end_date_string))
-                print("Payroll Cutover DateTime is " + datetime.strftime(payroll_cutover_time,'%H:%M'))
+            
         
-            siteStart = datetime.now()
+           
             # Get all Shifts with a Clock Status of "Clocked In" & "On Break"
             openshiftsJSON = json.loads(getOpenPunchList(xnu_conn=boconn,token=token,companyid=companyid, siteid=site["id"],start_date=punch_search_start_date_string,end_date=punch_search_end_date_string,page_number="0"))
-
+            if debug:
+                log("INFO", "Open Punch List JSON:" + str(openshiftsJSON))
             if openshiftsJSON["TotalCount"] > 0:
                 for shift in openshiftsJSON["Data"]:
                     put_item = {
@@ -287,21 +237,21 @@ def main():
                                             }
                     shift_id = shift["Id"]
                     if debug:
-                        pprint(shift)
+                        log("INFO","Shift Object: " + shift)
                     break_count = int(shift["Breaks"])
                     status = str(shift["Status"])
 
                     # Get the details for shifts in the Open Shift list.
                     shift_details_json = json.loads(getPunchItem(xnu_conn=boconn,token=token,companyid=companyid, siteid=site["id"], shift_id = shift_id))
                     if debug:
-                        pprint(shift_details_json)
+                        log("INFO","Shift Details: " + shift_details_json)
                     
                     #Let's check to see if this Shift was already split, based on a 7:00AM start time
                     ClockinDate = datetime. strptime(shift_details_json["Model"]["ClockIn"], '%Y-%m-%dT%H:%M:%S%z')
                     if ClockinDate.strftime('%H:%M') == datetime.strftime(payroll_cutover_time,'%H:%M'):
                         if debug:
                             print("Skipping Previously Split Record!")
-                        logInfo("Skipping the following previously split shift: " + json.dumps(shift_details_json))
+                        log("INFO","Skipping the following previously split shift: " + json.dumps(shift_details_json))
                         
                         continue
 
@@ -309,9 +259,7 @@ def main():
 
                     today_dt=todaystr + "T" + datetime.strftime(payroll_cutover_time,'%H:%M') + ":01-05:00"
                     if ClockinDate >= datetime. strptime(today_dt, '%Y-%m-%dT%H:%M:%S%z'):
-                        if debug:
-                            print("Skipping today's shift!")
-                        ("Skipping the following shift for the current day: " + json.dumps(shift_details_json))
+                        log("INFO","Skipping the following shift for the current day: " + json.dumps(shift_details_json))
                         continue
 
                     if break_count == 0:
@@ -325,12 +273,10 @@ def main():
                         put_item["Id"]=shift_details_json["Model"]["Id"] 
 
                         put_item_json = json.loads(json.dumps(put_item))
-                        if debug:
-                            print(put_item_json)
-                        
-                            print("Closing existing Punch without a Break!")
-                        logInfo("Creating new Punch without any Break Time: ")
-                        logInfo(put_item_json)
+
+                        log("INFO","Creating new Punch without any Break Time: ")
+                        log("INFO",put_item_json)
+
                         putPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=put_item_json)
 
                         # Post a new Punch Edit one second after the end of the previous.
@@ -338,10 +284,10 @@ def main():
                         post_item["EmployeeJobId"]=shift_details_json["Model"]["EmployeeJobId"] 
                         post_item["ClockIn"]=todaystr + "T07:00:01-05:00"
                         post_item_json = json.loads(json.dumps(post_item))
-                        if debug:
-                            print("Creating new Punch without a Break!")
-                        logInfo("Creating new Punch without any Break Time: ")
-                        logInfo(post_item_json)
+
+                        log("INFO","Creating new Punch without any Break Time: ")
+                        log("INFO",post_item_json)
+
                         postPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=post_item_json)
 
                     elif break_count > 0 and status == "CLOCKED_IN":
@@ -368,12 +314,9 @@ def main():
                                 
                         put_item["Breaks"] = break_list        
                         put_item_json = json.loads(json.dumps(put_item))
-                        if debug:
-                            print(put_item_json)
-                        
-                            print("Closing existing Punch with Break(s)!")
-                        logInfo("Creating new Punch with Break Time: ")
-                        logInfo(put_item_json)
+
+                        log("INFO","Creating new Punch with Break Time: ")
+                        log("INFO",put_item_json)
                         putPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=put_item_json)
                         
                         # Post a new Punch Edit one second after the end of the previous.
@@ -382,10 +325,10 @@ def main():
                         post_item["ClockIn"]=todaystr  + "T" + datetime.strftime(payroll_cutover_time,'%H:%M') + ":01-05:00"
                         
                         post_item_json = json.loads(json.dumps(post_item))
-                        if debug:
-                            print("Creating new Punch without a Break!")
-                        logInfo("Creating new Punch without any Break Time: ")
-                        logInfo(post_item_json)
+
+                        log("INFO","Creating new Punch without any Break Time: ")
+                        log("INFO",post_item_json)
+
                         postPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=post_item_json)
                     else:
                         shift_start = shift_details_json["Model"]["ClockIn"] 
@@ -411,12 +354,10 @@ def main():
                                 
                         put_item["Breaks"] = break_list        
                         put_item_json = json.loads(json.dumps(put_item))
-                        if debug:
-                            print(put_item_json)
                         
-                        print("Closing existing Punch with Break(s)!")
-                        logInfo("Creating new Punch with Break Time: ")
-                        logInfo(put_item_json)
+                        log("INFO","Creating new Punch with Break Time: ")
+                        log("INFO",put_item_json)
+
                         putPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=put_item_json)
                         
                         # Post a new Punch Edit one second after the end of the previous.
@@ -425,13 +366,12 @@ def main():
                         post_item["ClockIn"]=todaystr  + "T" + datetime.strftime(payroll_cutover_time,'%H:%M') + ":01-05:00"
                         break_list=[]
                         break_list.append({"StartDateTime": todaystr + "T" + datetime.strftime(payroll_cutover_time,'%H:%M') + ":01-05:00", "EndDateTime": None, "BreakTimeId": brk["BreakTimeId"]})
+                        
                         post_item["Breaks"] = break_list  
-
                         post_item_json = json.loads(json.dumps(post_item))
-                        if debug:
-                            print("Creating new Punch without a Break!")
-                        logInfo("Creating new Punch without any Break Time: ")
-                        logInfo(post_item_json)
+
+                        log("INFO","Creating new Punch without any Break Time: ")
+                        log("INFO",post_item_json)
                         postPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=post_item_json)
                         
 
@@ -447,7 +387,7 @@ def main():
     scriptEnd = datetime.now()
     duration = scriptEnd - scriptStart
     duration_in_s = duration.total_seconds()
-    print("This script is DONE, man.. Fully baked in " + str(duration_in_s) + " seconds.")
+    log("INFO","This script is DONE, man.. Fully baked in " + str(duration_in_s) + " seconds.")
 
 if __name__ == "__main__":
     main()

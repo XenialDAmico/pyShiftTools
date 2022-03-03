@@ -1,5 +1,6 @@
 
 import requests, json
+from lib.utils import log
 
 debug = 0
 
@@ -21,10 +22,12 @@ def getIntegratorToken(xprtconn, key_id, secret_key, companyid):
     try:
         res = requests.request("POST", itoken_url, data=itoken_payload, headers=itoken_headers)
     except requests.exceptions.HTTPError as errh:
-        print ("ERROR - HTTP ERROR:",errh)
+        log("ERROR","ERROR - HTTP ERROR:",errh)
+        print("ERROR - HTTP ERROR:",errh)
         exit()
     except requests.exceptions.Timeout as errt:
-        print ("ERROR - TIMEOUT:",errt)  
+        log("ERROR","ERROR - TIMEOUT:",errt)  
+        print("ERROR - TIMEOUT:",errt)
         exit()
     except requests.exceptions.ConnectionError as errc:
         print ("ERROR - CONNECTION ISSUE:",errc) 
