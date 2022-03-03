@@ -184,7 +184,7 @@ def main():
         output_dict = [x for x in sitesJSON["items"] if x['id'] == siteid]
         sitesJSON["items"] = output_dict
 
-    #Progress is a nice touch, perhaps...
+    # Progress is a nice touch, perhaps...
     i = 0
     printProgressBar(i, len(sitesJSON["items"]), prefix = 'Progress:', suffix = 'Complete', length = 50)
     for  site in sitesJSON["items"]:
@@ -374,7 +374,6 @@ def main():
                         log("INFO",post_item_json)
                         postPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=post_item_json)
                         
-
             # Grab Metrics.
             siteEnd = datetime.now()
             duration = siteEnd - siteStart                 
