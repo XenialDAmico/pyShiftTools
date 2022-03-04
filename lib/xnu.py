@@ -1,6 +1,6 @@
 
 import requests, json
-from utils import log
+from lib.utils import log
 
 debug = 1
 

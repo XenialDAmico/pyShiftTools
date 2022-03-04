@@ -244,9 +244,8 @@ def main():
                     # Get the details for shifts in the Open Shift list.
                     shift_details_json = json.loads(getPunchItem(xnu_conn=boconn,token=token,companyid=companyid, siteid=site["id"], shift_id = shift_id))
                     
-                    log("INFO","Shift Details: " + str(shift_details_json))
-                    employee_name = shift_details_json["Model"]["EmployeeName"]
-                    log("INFO", "Shift Employee: " + employee_name)
+                    
+                    
 
                     #Let's check to see if this Shift was already split, based on a 7:00AM start time
                     ClockinDate = datetime. strptime(shift_details_json["Model"]["ClockIn"], '%Y-%m-%dT%H:%M:%S%z')
@@ -276,7 +275,7 @@ def main():
 
                         put_item_json = json.loads(json.dumps(put_item))
 
-                        log("INFO","Creating new Punch without any Break Time for Employee " + employee_name)
+                        log("INFO","Creating new Punch without any Break Time ")
                         log("INFO",put_item_json)
 
                         putPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=put_item_json)
@@ -287,7 +286,7 @@ def main():
                         post_item["ClockIn"]=todaystr + "T07:00:01-05:00"
                         post_item_json = json.loads(json.dumps(post_item))
 
-                        log("INFO","Creating new Punch without any Break Time for Employee " + employee_name)
+                        log("INFO","Creating new Punch without any Break Time")
                         log("INFO",post_item_json)
 
                         postPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=post_item_json)
@@ -317,7 +316,7 @@ def main():
                         put_item["Breaks"] = break_list        
                         put_item_json = json.loads(json.dumps(put_item))
 
-                        log("INFO","Creating new Punch with Break Time for Employee " + employee_name)
+                        log("INFO","Creating new Punch with Break Time")
                         log("INFO",put_item_json)
                         putPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=put_item_json)
                         

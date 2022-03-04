@@ -24,21 +24,23 @@ def getIntegratorToken(xprtconn, key_id, secret_key, companyid):
     except requests.exceptions.HTTPError as errh:
         log("ERROR","ERROR - HTTP ERROR:",errh)
         print("ERROR - HTTP ERROR:",errh)
-        exit()
+        exit(1)
     except requests.exceptions.Timeout as errt:
         log("ERROR","ERROR - TIMEOUT:",errt)  
         print("ERROR - TIMEOUT:",errt)
-        exit()
+        exit(1)
     except requests.exceptions.ConnectionError as errc:
         print ("ERROR - CONNECTION ISSUE:",errc) 
-        exit() 
+        log("ERROR","ERROR - TIMEOUT:",errc)  
+        exit(1) 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         print ("ERROR - ANOTHER ISSUE:", e) 
-        exit()
+        log("ERROR","ERROR - TIMEOUT:",e)  
+        exit(1)
     if res.status_code != 200:
         print(("ERROR GETTING ACCESS TOKEN: Status Code returned of " + str(res.status_code)))
-        exit()
+        exit(1)
     itoken = res.text
     itoken = "Bearer " + itoken
     if debug:
@@ -64,20 +66,20 @@ def getPersonToken(xprtconn, user, password):
         res = requests.request("POST", xprtconn + "/token", data=authPayload, headers=authheaders)
     except requests.exceptions.HTTPError as errh:
         print ("ERROR - HTTP ERROR:",errh)
-        exit()
+        exit(1)
     except requests.exceptions.Timeout as errt:
         print ("ERROR - TIMEOUT:",errt)  
-        exit()
+        exit(1)
     except requests.exceptions.ConnectionError as errc:
         print ("ERROR - CONNECTION ISSUE:",errc) 
-        exit() 
+        exit(1) 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         print ("ERROR - ANOTHER ISSUE:", e) 
-        exit()
+        exit(1)
     if res.status_code != 200:
         print(("AUTH ERROR: Problem encountered while getting a person token. Status Code returned of " + str(res.status_code)))
-        exit()
+        exit(1)
     token = res.text
     token = "Bearer " + token
     return token
@@ -118,20 +120,24 @@ def getSitesForCompany(xprtconn, token, companyid):
         res = requests.request("GET", xprtconn + "/companies/" + companyid + "/sites",  headers=headers)
     except requests.exceptions.HTTPError as errh:
         print ("ERROR - HTTP ERROR:",errh)
-        exit()
+        log("ERROR","ERROR:",errh)  
+        exit(1)
     except requests.exceptions.Timeout as errt:
         print ("ERROR - TIMEOUT:",errt)  
-        exit()
+        log("ERROR","ERROR:",errt)  
+        exit(1)
     except requests.exceptions.ConnectionError as errc:
         print ("ERROR - CONNECTION ISSUE:",errc) 
-        exit() 
+        log("ERROR","ERROR:",errc)  
+        exit(1) 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         print ("ERROR - ANOTHER ISSUE:", e) 
+        log("ERROR","ERROR:",e)  
         exit()    
     if res.status_code != 200:
         print(("AUTH ERROR: Problem encountered while getting the Site List. Status Code returned of " + str(res.status_code) + ". Error Description: " + str(res.text)))
-        exit()
+        exit(1)
 
     return res.text
 
