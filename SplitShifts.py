@@ -5,17 +5,6 @@
 # Libraries Required: 
 # "Requests" - For more information on installing this lib, see this link:https://pypi.org/project/requests/
 # ================================================================================================================================================================
-# Sample Usage - Dennys UAT
-# python3 SplitShifts.py companyid=61415d24163c350007f029ae  keyid=5cc1128d-18cb-4b00-a38f-342f34729460 secret=db42d23a-9921-44a4-93df-79dbd6f80cae environment=uat siteid=617c11eed44a5d00077d4ade
-#
-# Sample Usage - Dennys Prod
-# python3 SplitShifts.py siteid=60107930fc8b6e00078d6862 companyid=5ddab0e3d93109001df6a76c keyid=ac5515b8-269d-481e-8af3-c5b57f9cca3d secret=f1e6f1eb-0c3b-4d60-b472-11be6649ef3d environment=production 
-
-# Sample - Dennys (QA) 
-# python3 SplitShifts.py companyid=6141ac6e3434d8000716f5fb  keyid=7568f581-eb4f-4f9e-8c6f-22a258226714 secret=daf4cd7b-4ba5-4417-9684-2e879390490c environment=qa siteid=6141ac8de2d8a9000828a0a0
-# ========================================================================================================================================================================================================
-
-# !!!!!!!!! The audience for this script is internal to Xenial. Do NOT share with customers. !!!!!!!!!!!!!!
 
 # TO DO LIST:
 # Get Offset from Portal (sites). Currently, this script will only work for sites in the east coast
