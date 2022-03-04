@@ -22,3 +22,6 @@ Step 3: Get a list of Punches with Clock Statuses of "Clocked In" and "On Break"
 Step 4: Iterate through the array of objects included in the response.<br />
 Step 4a: If number_of_breaks is 0, end the shift with a Clock Out time equivalent to the Payroll Cutover time. Create a new shift with a 'Clock In' value equivalent to the Payroll Cutover Time and a 'Clock Out' value of NULL.<br />
 Step 4b: If number_of_breaks is > 0, end the shift with a Clock Out time equivalent to the Payroll Cutover time. End the Break without a 'Clock Out' value, setting its time to (1) Second prior to the Clock Out for the overall shift.Create a new shift with a 'Clock In' value equivalent to the Payroll Cutover Time and a 'Clock Out' value of NULL, with a break beginning at the Payroll Cutover Time. The break end time is likewise NULL.<br />
+
+### Logging
+A log file will be created in the current directory, suffixed with the date.
