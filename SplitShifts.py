@@ -22,8 +22,8 @@
 
 
 
-import  sys,  json, requests, pytz
-import logging, time
+import  sys,  json, requests, pytz, logging, time
+
 from datetime import datetime, timedelta
 from lib.utils import  printProgressBar,log
 from lib.xprt import getSitesForCompany, getIntegratorToken
@@ -148,17 +148,17 @@ def main():
                 rptconn = url["url"]
             if url["key"].lower == "portal":
                 xprtconn = url["url"]
-            #if url["key"].lower == "boh_core":
-            #    boconn = url["url"]
-            #if url["key"].lower == "dm":
-            #    dmconn = url["url"]
+            if url["key"].lower == "boh_core":
+                boconn = url["url"]
+            if url["key"].lower == "dm":
+                dmconn = url["url"]
 
 
     # Check for a Company - we're not doing much if it's not there.
     if companyid.lower() == "" :
         print("FATAL ERROR: Company or Site missing. Pass Argument CompanyID=<value>, and/or SiteID=<value>")
         log("ERROR","FATAL ERROR: Company or Site missing. Pass Argument CompanyID=<value>, and/or SiteID=<value>")
-        exit()
+        exit(1)
 
     # -------------------------------------------
     # Main Script Logic - Let's do it!
@@ -236,16 +236,18 @@ def main():
                                             "AdjustmentReasonId": "58f66d487024f950c17c3e63"
                                             }
                     shift_id = shift["Id"]
-                    if debug:
-                        log("INFO","Shift Object: " + shift)
+                    
+                    log("INFO","Open Shift Object: " + str(shift))
                     break_count = int(shift["Breaks"])
+                    log("INFO","Break Count for Shift (" + shift["Id"] + ") is " + str(break_count))
                     status = str(shift["Status"])
-
                     # Get the details for shifts in the Open Shift list.
                     shift_details_json = json.loads(getPunchItem(xnu_conn=boconn,token=token,companyid=companyid, siteid=site["id"], shift_id = shift_id))
-                    if debug:
-                        log("INFO","Shift Details: " + shift_details_json)
                     
+                    log("INFO","Shift Details: " + str(shift_details_json))
+                    employee_name = shift_details_json["Model"]["EmployeeName"]
+                    log("INFO", "Shift Employee: " + employee_name)
+
                     #Let's check to see if this Shift was already split, based on a 7:00AM start time
                     ClockinDate = datetime. strptime(shift_details_json["Model"]["ClockIn"], '%Y-%m-%dT%H:%M:%S%z')
                     if ClockinDate.strftime('%H:%M') == datetime.strftime(payroll_cutover_time,'%H:%M'):
@@ -274,7 +276,7 @@ def main():
 
                         put_item_json = json.loads(json.dumps(put_item))
 
-                        log("INFO","Creating new Punch without any Break Time: ")
+                        log("INFO","Creating new Punch without any Break Time for Employee " + employee_name)
                         log("INFO",put_item_json)
 
                         putPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=put_item_json)
@@ -285,7 +287,7 @@ def main():
                         post_item["ClockIn"]=todaystr + "T07:00:01-05:00"
                         post_item_json = json.loads(json.dumps(post_item))
 
-                        log("INFO","Creating new Punch without any Break Time: ")
+                        log("INFO","Creating new Punch without any Break Time for Employee " + employee_name)
                         log("INFO",post_item_json)
 
                         postPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=post_item_json)
@@ -315,7 +317,7 @@ def main():
                         put_item["Breaks"] = break_list        
                         put_item_json = json.loads(json.dumps(put_item))
 
-                        log("INFO","Creating new Punch with Break Time: ")
+                        log("INFO","Creating new Punch with Break Time for Employee " + employee_name)
                         log("INFO",put_item_json)
                         putPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=put_item_json)
                         
@@ -326,7 +328,7 @@ def main():
                         
                         post_item_json = json.loads(json.dumps(post_item))
 
-                        log("INFO","Creating new Punch without any Break Time: ")
+                        log("INFO","Creating new Punch without any Break Time for Employee " + employee_name)
                         log("INFO",post_item_json)
 
                         postPunchEditItem(xnu_conn = boconn,token=token,companyid=companyid,siteid=site["id"], editJSON=post_item_json)
@@ -387,6 +389,7 @@ def main():
     duration = scriptEnd - scriptStart
     duration_in_s = duration.total_seconds()
     log("INFO","This script is DONE, man.. Fully baked in " + str(duration_in_s) + " seconds.")
+    exit(0)
 
 if __name__ == "__main__":
     main()

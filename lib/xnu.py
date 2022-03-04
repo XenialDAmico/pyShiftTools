@@ -1,5 +1,6 @@
 
 import requests, json
+from utils import log
 
 debug = 1
 
@@ -23,17 +24,21 @@ def putShift(xnu_conn, token, companyid,siteid, data):
         res = requests.put( url=xnu_url, data=json.dumps(data), headers=xnu_headers )
     except requests.exceptions.HTTPError as errh:
         print ("ERROR - HTTP ERROR:",errh)
-        exit()
+        log("ERROR",errh)
+        exit(1)
     except requests.exceptions.Timeout as errt:
         print ("ERROR - TIMEOUT:",errt)  
-        exit()
+        log("ERROR",errt)
+        exit(1)
     except requests.exceptions.ConnectionError as errc:
         print ("ERROR - CONNECTION ISSUE:",errc) 
-        exit() 
+        log("ERROR",errc)
+        exit(1) 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         print ("ERROR - ANOTHER ISSUE:",e) 
-        exit()
+        log("ERROR",e)
+        exit(1)
 
 
     return res.status_code
@@ -54,17 +59,21 @@ def deleteShifts(xnu_conn, token, companyid, shiftid):
         res = requests.request("DELETE", xnu_url,  headers=xnu_headers)
     except requests.exceptions.HTTPError as errh:
         print ("ERROR - HTTP ERROR:",errh)
-        exit()
+        log("ERROR",errh)
+        exit(1)
     except requests.exceptions.Timeout as errt:
         print ("ERROR - TIMEOUT:",errt)  
-        exit()
+        log("ERROR",errt)
+        exit(1)
     except requests.exceptions.ConnectionError as errc:
         print ("ERROR - CONNECTION ISSUE:",errc) 
-        exit() 
+        log("ERROR",errc)
+        exit(1) 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         print ("ERROR - ANOTHER ISSUE:",e) 
-        exit()
+        log("ERROR",e)
+        exit(1)
 
     return res.status_code
 
@@ -85,17 +94,21 @@ def getShifts(xnu_conn, token, companyid, siteid):
         res = requests.request("GET", xnu_url,  headers=xnu_headers)
     except requests.exceptions.HTTPError as errh:
         print ("ERROR - HTTP ERROR:",errh)
-        exit()
+        log("ERROR",errh)
+        exit(1)
     except requests.exceptions.Timeout as errt:
         print ("ERROR - TIMEOUT:",errt)  
+        log("ERROR",errt)
         exit()
     except requests.exceptions.ConnectionError as errc:
         print ("ERROR - CONNECTION ISSUE:",errc) 
-        exit() 
+        log("ERROR",errc)
+        exit(1) 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         print ("ERROR - ANOTHER ISSUE:",e) 
-        exit()    
+        log("ERROR",e)
+        exit(1)    
     return res.text
 
 def getOnBreakShifts(xnu_conn, token, companyid, siteid):
@@ -175,17 +188,21 @@ def getOpenPunchList(xnu_conn, token, companyid, siteid, start_date, end_date, p
         res = requests.request("GET", xnu_url,  headers=xnu_headers)
     except requests.exceptions.HTTPError as errh:
         print ("ERROR - HTTP ERROR:",errh)
-        exit()
+        log("ERROR",errh)
+        exit(1)
     except requests.exceptions.Timeout as errt:
         print ("ERROR - TIMEOUT:",errt)  
-        exit()
+        log("ERROR",errt)
+        exit(1)
     except requests.exceptions.ConnectionError as errc:
         print ("ERROR - CONNECTION ISSUE:",errc) 
-        exit() 
+        log("ERROR",errc)
+        exit(1) 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         print ("ERROR - ANOTHER ISSUE:",e) 
-        exit()
+        log("ERROR",e)
+        exit(1)
     
     return res.text
 
@@ -301,13 +318,14 @@ def postPunchEditItem(xnu_conn, token, companyid, siteid, editJSON):
         res = requests.post( url=xnu_url, data=json.dumps(editJSON), headers=xnu_headers )
     except requests.exceptions.HTTPError as errh:
         print ("ERROR - HTTP ERROR:",errh)
-        exit()
+        exit(1)
     except requests.exceptions.Timeout as errt:
         print ("ERROR - TIMEOUT:",errt)  
-        exit()
+        exit(1)
     except requests.exceptions.ConnectionError as errc:
         print ("ERROR - CONNECTION ISSUE:",errc) 
-        exit() 
+        log("ERROR - CONNECTION ISSUE:",errc) 
+        exit(1)
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         print ("ERROR - ANOTHER ISSUE:",e) 
